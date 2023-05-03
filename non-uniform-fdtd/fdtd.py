@@ -26,7 +26,7 @@ class FDTD_Maxwell_1D():
         cH = -self.dt / self.dx / mu0
 
         bcL = self.boundaryConditions[0]
-        bcR = self.boundaryConditions[0]
+        bcR = self.boundaryConditions[1]
 
         if bcL == "Mur":
             eMur = e[1]

@@ -35,11 +35,11 @@ class FDTD_Maxwell_1D():
         # Lado izquierdo
 
         if bcL == "PEC":
-            e[0] = 0.0                                         # PEC
+            e[0] = 0.0                                       # PEC
         elif bcL == "PMC":
-            e[0] = e[0] - 2* dt/dx/eps*h[0]                  # PMC
+            e[0] = e[0] - 2* self.dt/self.dx/eps0*h[0]                  # PMC
         elif bcL == "Periodic":
-            e[0] =  (-dt / dx / eps) * (h[0] - h[-1]) + e[0] # Periodica
+            e[0] =  (-self.dt / self.dx / eps0) * (h[0] - h[-1]) + e[0] # Periodica
         elif bcL == "Mur":
             e[0] = eMur + (c0*self.dt-self.dx)/(c0*self.dt+self.dx)*(e[1]-e[0]) # Mur
         else:
