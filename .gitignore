@@ -1,4 +1,5 @@
 Trabajo-MCFNL.code-workspace
+non-uniform-fdtd/tests.py
 .vscode/settings.json
 CosasClase/__pycache__/fdtd.cpython-310.pyc
 CosasClase/__pycache__/test_fdtd.cpython-310-pytest-7.3.1.pyc
