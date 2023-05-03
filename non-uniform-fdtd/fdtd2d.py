@@ -28,9 +28,9 @@ class FDTD_Maxwell_2D():
         Ey = self.Ey
         Hz = self.Hz
 
-        cEx = self.dt / self.dy / eps0
-        cEy = -self.dt / self.dx / eps0
-        cHz = -self.dt / mu0
+        cEx = self.dt / self.dy / eps0 / 0.5
+        cEy = -self.dt / self.dx / eps0 / 0.5
+        cHz = -self.dt / mu0 / 0.5
 
         bcLx = self.boundaryConditions[0]
         bcLy = self.boundaryConditions[1]
@@ -38,8 +38,8 @@ class FDTD_Maxwell_2D():
         bcRy = self.boundaryConditions[3]
        
         # Actualizamos campos eléctricos
-        Ex[1:-1,1:-1] = Ex[1:-1,1:-1] + cEx * (Hz[:,1:] - Hz[:,:-1])
-        Ey[1:-1,1:-1] = Ey[1:-1,1:-1] + cEy * (Hz[1:,:] - Hz[:-1,:])
+        Ex[1:-1,1:-1] = Ex[1:-1,1:-1] + cEx * (Hz[1:,1:] + Hz[:-1,1:] - Hz[1:,:-1] - Hz[:-1,:-1])
+        Ey[1:-1,1:-1] = Ey[1:-1,1:-1] + cEy * (Hz[1:,1:] + Hz[1:,:-1] - Hz[:-1,1:] - Hz[:-1,:-1])
 
         # Lado izquierdo
         if bcLx == "PEC":
@@ -67,4 +67,5 @@ class FDTD_Maxwell_2D():
         else:       
             raise ValueError("Invalid boundary conditions on the left side")
 
-        Hz[:] = Hz[:] + cHz * (1/self.dx * (Ey[1:,:] - Ey[:-1,:]) - 1/self.dy * (Ex[:,1:] - Ex[:,:-1]))
+        Hz[:,:] = Hz[:,:] + cHz * (1/self.dx * (Ey[1:,1:] + Ey[1:,:-1] - Ey[:-1,1:] - Ey[:1,:-1]) 
+                                   - 1/self.dy * (Ex[1:,1:] + Ex[:-1,1:] -Ex[1:,:-1] - Ex[:-1,:-1]))
