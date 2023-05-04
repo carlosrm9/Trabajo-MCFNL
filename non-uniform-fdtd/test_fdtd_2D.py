@@ -19,7 +19,7 @@ def test_pec_box():
     fig = plt.figure()
     for _ in np.arange(0, 20, fd.dt):
         fd.step()
-        plt.contour(XDual, YDual, fd.Hz)
+        plt.contourf(XDual, YDual, fd.Hz)
         # ax.set_xlabel('x')
         # ax.set_ylabel('y')
         # ax.set_zlabel('Ex')
