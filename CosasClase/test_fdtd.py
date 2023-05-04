@@ -14,13 +14,13 @@ def test_pec_box():
     for _ in np.arange(0, 20, fd.dt):
         fd.step()
 
-        # plt.plot(fd.x, fd.e, '*')
-        # plt.plot(fd.xDual, fd.h, '.')
-        # plt.ylim(-1.1, 1.1)
-        # plt.xlim(fd.x[0], fd.x[-1])
-        # plt.grid()
-        # plt.pause(0.01)
-        # plt.cla()
+        plt.plot(fd.x, fd.e, '*')
+        plt.plot(fd.xDual, fd.h, '.')
+        plt.ylim(-1.1, 1.1)
+        plt.xlim(fd.x[0], fd.x[-1])
+        plt.grid()
+        plt.pause(0.01)
+        plt.cla()
     
     R = np.corrcoef(initialField, fd.e)
     
