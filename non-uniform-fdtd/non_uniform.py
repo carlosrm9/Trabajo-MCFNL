@@ -1,19 +1,19 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Constantes #
+# CONSTANTES #
 
 eps = 1.0
 mu = 1.0
 c = 1/np.sqrt(eps*mu)
 
-# Clases #
+# CLASES #
 
 class FDTD_Maxwell_1D_nonuniform():
     
     # MÉTODO DE INICIACIÓN #
 
-    def __init__(self, dx=np.full(100, 0.1), CFL=1.0, bounds=["PEC", "PEC"]): 
+    def __init__(self, x=np.linspace(0, 10, 101), CFL=1.0, bounds=["PEC", "PEC"]): 
 
         # Asegurarse de que las condiciones de contorno tengan sentido #
         
@@ -24,30 +24,37 @@ class FDTD_Maxwell_1D_nonuniform():
         
         # Longitud del grid #
 
-        self.N = len(dx) + 1
+        self.N = len(x)
+
+        # Inicializa los grids #
+
+        self.x = x
+        self.xDual = np.zeros(self.N-1)
+        self.xDual[:] = (self.x[1:] + self.x[:-1])/2
 
         # Define el paso temporal y espacial #
 
-        self.dx = dx
+        self.dx = np.zeros(self.N - 1)
         self.dxDual = np.zeros(self.N - 1)
+
+        self.dx[:] = (self.x[1:] - self.x[:-1])/2
+
         self.dxDual[:-1] = (self.dx[1:] + self.dx[:-1])/2
         self.dxDual[-1] = (self.dx[0] + self.dx[-1])/2 # Define la distancia entre el último y el primer punto de la red recíproca (para PBC)
-        self.dt = CFL * min(dx) / c
-
-        # Inicializa los grids de acuerdo al paso espacial dado #
-
-        self.x = np.zeros(self.N)
-        self.xDual = np.zeros(self.N - 1)
-
-        for i in range(0,self.N-1):
-            self.x[i+1] = self.x[i] + dx[i]
         
-        self.xDual[:] = (self.x[1:] + self.x[:-1])/2
+        self.dt = CFL * min(self.dx) / c
 
         # Inicializa los campos eléctrico y magnético #
 
         self.e = np.zeros(self.x.shape)
         self.h = np.zeros(self.xDual.shape)
+
+        # Define unas constantes útiles #
+
+        self.cE = np.zeros(len(self.dxDual))
+        self.cH = np.zeros(len(self.dx))
+        self.cE[:] = -self.dt / self.dxDual[:] / eps
+        self.cH[:] = -self.dt / self.dx[:] / mu
 
         # Pasa las condiciones de contorno a la clase #
 
@@ -57,17 +64,12 @@ class FDTD_Maxwell_1D_nonuniform():
 
     def step(self):
 
-        # Pasa los campos eléctricos y magnéticos #
+        # Pasa los campos eléctricos y magnéticos y las constantes #
 
         e = self.e
         h = self.h
-
-        # Define unas constantes útiles #
-
-        cE = np.zeros(len(self.dxDual))
-        cH = np.zeros(len(self.dx))
-        cE[:] = -self.dt / self.dxDual[:] / eps
-        cH[:] = -self.dt / self.dx[:] / mu
+        cE = self.cE
+        cH = self.cH
 
         # Pasa las condiciones de contorno #
 
@@ -76,6 +78,7 @@ class FDTD_Maxwell_1D_nonuniform():
 
         if bcL == "Mur":
             eMurL = e[1] # Necesario guardar este valor para la condición de Mur
+        if bcR == "Mur":
             eMurR = e[-2] 
 
         # Evolución del campo eléctrico #
@@ -101,7 +104,7 @@ class FDTD_Maxwell_1D_nonuniform():
         if bcR == "PEC":
             e[-1] = 0.0
         elif bcR == "PMC":
-            e[-1] = e[-1] + 2 * cE[-1] * h[-1]
+            e[-1] = e[-1] - 2 * cE[-1] * h[-1]
         elif bcR == "PBC":
             e[-1] = e[0]
         elif bcR == "Mur":
