@@ -7,25 +7,32 @@ c0 = 1/np.sqrt(eps0*mu0)
 
 class FDTD_Maxwell_2D_non_uniform():
     def __init__(self, x, y, CFL=1.0, boundaryConditions=["PEC", "PEC", "PEC", "PEC"]):
-        Nx = len(x)
-        Ny = len(y)
-
+        self.Nx = len(x)
+        self.Ny = len(y)
+        # Vectores diferencia x_i+1 - x_i :
+        self.dx = np.diff(x)
+        self.dy = np.diff(y)
         
-        self.xDual = (x[1:] + x[:-1])/2
+        # A partir de estos creamos el grid dual:
+        self.xDual = x[:-1] + self.dx
         self.yDual = (y[1:] + y[:-1])/2
 
-        self.dx = self.x[1] - self.x[0]
-        self.dy = self.y[1] - self.y[0]
-        self.dt = CFL * min(self.dx, self.dy) / c0 /np.sqrt(2)
+        self.dxDual = np.diff(self.xDual)
+        self.dyDual = np.diff(self.yDual)
+
+        diff = np.concatenate((self.dx,self.dy))
+        self.dt = CFL * min(diff) / c0 / np.sqrt(2)
 
         # Modo TE
-        self.Ex = np.zeros((Nx-1, Ny))
-        self.Ey = np.zeros((Nx, Ny-1))
-        self.Hz = np.zeros((Nx-1, Ny-1))
+        self.Ex = np.zeros((self.Nx-1, self.Ny))
+        self.Ey = np.zeros((self.Nx, self.Ny-1))
+        self.Hz = np.zeros((self.Nx-1, self.Ny-1))
 
         self.boundaryConditions = boundaryConditions
-        self.cEx = self.dt / self.dy / eps0 
-        self.cEy = -self.dt / self.dx / eps0 
+        self.cEx = np.zeros(self.dyDual.shape)
+        self.cEy = np.zeros(self.dxDual.shape)
+        self.cEx[:] = self.dt / self.dyDual[:] / eps0 
+        self.cEy[:] = -self.dt / self.dxDual[:] / eps0 
         self.cHz = -self.dt / mu0
 
     def step(self):
@@ -41,8 +48,11 @@ class FDTD_Maxwell_2D_non_uniform():
         bcU = self.boundaryConditions[3]
        
         # Actualizamos campos eléctricos
-        Ex[:,1:-1] = Ex[:,1:-1] + cEx * (Hz[:,1:] - Hz[:,:-1]) 
-        Ey[1:-1,:] = Ey[1:-1,:] + cEy * (Hz[1:,:] - Hz[:-1,:]) 
+        Ex[:,1:-1] = Ex[:,1:-1] + cEx[:] * (Hz[:,1:] - Hz[:,:-1]) 
+
+
+        Ey[1:-1,:] = Ey[1:-1,:] + cEy[:, np.newaxis] * (Hz[1:,:] - Hz[:-1,:]) 
+
 
         # Lado izquierdo
         if bcL == "PEC":
@@ -61,5 +71,5 @@ class FDTD_Maxwell_2D_non_uniform():
         else:       
             raise ValueError("Invalid boundary conditions on the left side")
 
-        Hz[:,:] = Hz[:,:] + cHz * (1/self.dx * (Ey[1:,:] - Ey[:-1,:]) 
-                                   - 1/self.dy * (Ex[:,1:] - Ex[:,:-1]))
+        Hz[:,:] = Hz[:,:] + cHz * (1/self.dx[:, np.newaxis] * (Ey[1:,:] - Ey[:-1,:]) 
+                                   - 1/self.dy[:] * (Ex[:,1:] - Ex[:,:-1]))

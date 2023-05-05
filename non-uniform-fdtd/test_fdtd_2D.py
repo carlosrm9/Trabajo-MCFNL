@@ -19,9 +19,6 @@ def test_pec_box():
     for _ in np.arange(0, 20, fd.dt):
         fd.step()
         plt.contourf(XDual, YDual, fd.Hz)
-        # ax.set_xlabel('x')
-        # ax.set_ylabel('y')
-        # ax.set_zlabel('Ex')
         plt.grid()
         plt.pause(0.001)
         plt.cla()
