@@ -14,8 +14,8 @@ CFL0 = 1.0
 
 # grid = np.concatenate([np.arange(0, 5, 0.1), np.arange(5, 10 + 0.05, 0.05)])
 
-xaux = np.linspace(1, 10, 101)
-dists = 1/2.5/xaux
+aux = np.linspace(1, 10, 101)
+dists = 1/2.5/aux
 
 grid = np.zeros(len(dists) + 1)
 for i in len(dists):
