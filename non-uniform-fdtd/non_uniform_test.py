@@ -10,9 +10,17 @@ dxL = 0.1
 dxR = 0.05
 CFL0 = 1.0
 
-grid = np.linspace(0, 10, 101)
+# grid = np.linspace(0, 10, 101)
 
-grid = np.concatenate([np.arange(0, 5, 0.1), np.arange(5, 10 + 0.05, 0.05)])
+# grid = np.concatenate([np.arange(0, 5, 0.1), np.arange(5, 10 + 0.05, 0.05)])
+
+xaux = np.linspace(1, 10, 101)
+dists = 1/2.5/xaux
+
+grid = np.zeros(len(dists) + 1)
+for i in len(dists):
+    grid[i+1] = grid[i] + dists[i]
+
 
 def test_caja_pec_animacion():
     fd = fdtd.FDTD_Maxwell_1D_nonuniform(x = grid, CFL = CFL0)
@@ -194,16 +202,20 @@ def test_comparacion():
     fdnon.e[:] = e0non[:]
     fduni.e[:] = e0uni[:]
 
-    for i in np.arange(0, 20, fdnon.dt):
+    for i in np.arange(0, 20+fdnon.dt, fdnon.dt):
         fdnon.step()
-    for i in np.arange(0, 40, fduni.dt):
+        # fdnon.animation()
+    for i in np.arange(0, 40+fduni.dt, fduni.dt):
         fduni.step()
-        # fduni.animation()
     
+    err = 0
+    for i in range(len(gridLeft)):
+        err = err + np.abs(fdnon.e[i] - fduni.e[i])
+    # dif[i] = np.sum(np.abs(finalField - initialField))
+
+    print(err)
     plt.plot(fdnon.x, fdnon.e, 'o', label="nonunif")
     plt.plot(fduni.x, fduni.e, 'o', label="uniform")
     plt.legend()
     plt.show()
-    # plt.plot(fdnon.x, e0non, 'o')
-    # plt.plot(fduni.x, e0uni, 'o')
-    # plt.show()
+   
