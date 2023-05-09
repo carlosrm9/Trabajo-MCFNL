@@ -1,12 +1,20 @@
 import pytest
 import numpy as np
 import matplotlib.pyplot as plt
-import fdtd2d
+import fdtf2d_non_uniform
 
 def test_pec_box():
-    fd = fdtd2d.FDTD_Maxwell_2D(Lx=20,Ly=20,CFL=0.99,Nx=201,Ny=201,
-                                boundaryConditions=["PEC", "PEC", "PEC", "PEC"])
-    X, Y = np.meshgrid(fd.x, fd.y)
+    x1 = np.arange(0, 5, step = 0.1)
+    x2 = np.arange(5, 15, step = 0.01)
+    x3 = np.arange(15, 20.001, step = 0.1)
+    x = np.concatenate((x1,x2,x3))
+    y1 = np.arange(0, 5, step = 0.1)
+    y2 = np.arange(5, 15, step = 0.01)
+    y3 = np.arange(15, 20.001, step = 0.1)
+    y = np.concatenate((y1,y2,y3))
+    fd = fdtf2d_non_uniform.FDTD_Maxwell_2D_non_uniform(x,y,CFL=0.99,
+                                                        boundaryConditions=["PEC", "PEC", "PEC", "PEC"])
+    X, Y = np.meshgrid(x, y)
     XDual, YDual = np.meshgrid(fd.xDual, fd.yDual)
     x0 = 10.0; y0 = 10.0 ; s0 = 0.75
     initialExfield = np.zeros(fd.Ex.shape)
