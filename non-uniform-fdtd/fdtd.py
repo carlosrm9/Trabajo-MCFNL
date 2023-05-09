@@ -51,3 +51,12 @@ class FDTD_Maxwell_1D():
             e[-1] = 0.0
 
         h[:] = cH * (e[1:] - e[:-1]) + h[:]
+
+    def animation(self, t=0.01):
+        plt.plot(self.x, self.e, '*')
+        plt.plot(self.xDual, self.h, '.')
+        plt.ylim(-1.1, 1.1)
+        plt.xlim(self.x[0], self.x[-1])
+        plt.grid()
+        plt.pause(t)
+        plt.cla()

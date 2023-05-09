@@ -187,11 +187,23 @@ def test_comparacion():
     fdnon = fdtd.FDTD_Maxwell_1D_nonuniform(x = grid, CFL = CFL0)
     fduni = fdtduniform.FDTD_Maxwell_1D(L = 20, CFL = CFL0, dx = dxL)
 
+    x0 = 3.0; s0 = 0.75
+    e0non = np.exp(-(fdnon.x - x0)**2 / (2*s0**2))
+    e0uni = np.exp(-(fduni.x - x0)**2 / (2*s0**2))
+
+    fdnon.e[:] = e0non[:]
+    fduni.e[:] = e0uni[:]
+
     for i in np.arange(0, 20, fdnon.dt):
         fdnon.step()
-    for i in np.arange(0, 20, fduni.dt):
+    for i in np.arange(0, 40, fduni.dt):
         fduni.step()
+        # fduni.animation()
     
-    plt(fdnon.x, fdnon.e)
-    plt(fduni.x, fduni.e)
-    plt.show
+    plt.plot(fdnon.x, fdnon.e, 'o', label="nonunif")
+    plt.plot(fduni.x, fduni.e, 'o', label="uniform")
+    plt.legend()
+    plt.show()
+    # plt.plot(fdnon.x, e0non, 'o')
+    # plt.plot(fduni.x, e0uni, 'o')
+    # plt.show()
