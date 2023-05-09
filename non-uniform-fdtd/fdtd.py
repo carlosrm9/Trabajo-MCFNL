@@ -6,8 +6,8 @@ mu0 = 1.0
 c0 = 1/np.sqrt(eps0*mu0)
 
 class FDTD_Maxwell_1D():
-    def __init__(self, L=10, CFL=1.0, Nx=101, boundaryConditions=["PEC", "PEC"]):
-        self.x = np.linspace(0, L, num=Nx)
+    def __init__(self, L=10, CFL=1.0, dx=0.1, boundaryConditions=["PEC", "PEC"]):
+        self.x = np.arange(0, L, dx)
         self.xDual = (self.x[1:] + self.x[:-1])/2
 
         self.dx = self.x[1] - self.x[0]
