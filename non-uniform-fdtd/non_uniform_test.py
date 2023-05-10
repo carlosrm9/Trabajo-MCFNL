@@ -213,10 +213,12 @@ def test_errores_trozos():
     plt.grid(which='both')
     plt.show()
 
+    title = "Nx = " + str(NxRange[i]) + ", CFL = " + str(CFL)
     plt.figure(2)
     plt.plot(fd.x, initialField, '.-', label="eini")
     plt.plot(fd.x, finalField, '.-', label="efin")  
     plt.grid(which='both')
+    plt.title(title)
     plt.legend()
     plt.show() 
 
