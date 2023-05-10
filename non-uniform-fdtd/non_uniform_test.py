@@ -180,9 +180,11 @@ def test_caja_mur_der():
 
 def test_errores_trozos():
 
-    NxRange = np.int32(np.round(np.logspace(1, 3, num=20)/2))
+    NxRange = np.int32(np.round(np.logspace(2, 4, num=20)/2))
     dxRange = 10/2/NxRange
     err = np.zeros(NxRange.shape)
+
+    plt.figure(1)
 
     for CFL in np.array([0.25, 0.5, 0.75, 1.0]):
         for i in range(len(NxRange)):
@@ -197,7 +199,7 @@ def test_errores_trozos():
             initialField = np.exp(-(fd.x - x0)**2 / (2*s0**2))
             
             fd.e[:] = initialField[:]
-            for _ in np.arange(0, 20, fd.dt):
+            for _ in np.arange(0, 20-fd.dt, fd.dt):
                 fd.step()
             
             finalField = fd.e    
@@ -205,8 +207,18 @@ def test_errores_trozos():
         plt.loglog(dxRange, err, '.-', label=CFL)
     
     plt.legend()
+    plt.gca().invert_xaxis()
+    plt.xlabel("dx")
+    plt.ylabel("Err")
     plt.grid(which='both')
     plt.show()
+
+    plt.figure(2)
+    plt.plot(fd.x, initialField, '.-', label="eini")
+    plt.plot(fd.x, finalField, '.-', label="efin")  
+    plt.grid(which='both')
+    plt.legend()
+    plt.show() 
 
 
 def test_errores_random():
@@ -230,7 +242,7 @@ def test_errores_random():
             initialField = np.exp(-(fd.x - x0)**2 / (2*s0**2))
             
             fd.e[:] = initialField[:]
-            for _ in np.arange(0, 20, fd.dt):
+            for _ in np.arange(0, 20+fd.dt, fd.dt):
                 fd.step()
             
             finalField = fd.e    
@@ -241,7 +253,7 @@ def test_errores_random():
             # plt.show()
         plt.loglog(NxRange, err, '.-', label=CFL)
     
-    plt.loglog(NxRange, dxRange**2*100, 'k', label = "O(h**2)")
+    plt.loglog(NxRange, dxRange**2*70, 'k', label = "O(h**2)")
     plt.legend()
     plt.grid(which='both')
     plt.show()
