@@ -4,13 +4,13 @@ import matplotlib.pyplot as plt
 import fdtf2d_non_uniform
 
 def test_pec_box():
-    x1 = np.arange(0, 5, step = 0.1)
-    x2 = np.arange(5, 15, step = 0.01)
-    x3 = np.arange(15, 20.001, step = 0.1)
+    x1 = np.arange(0, 5, step = 0.2)
+    x2 = np.arange(5, 15, step = 0.1)
+    x3 = np.arange(15, 20.001, step = 0.2)
     x = np.concatenate((x1,x2,x3))
-    y1 = np.arange(0, 5, step = 0.1)
-    y2 = np.arange(5, 15, step = 0.01)
-    y3 = np.arange(15, 20.001, step = 0.1)
+    y1 = np.arange(0, 5, step = 0.2)
+    y2 = np.arange(5, 15, step = 0.1)
+    y3 = np.arange(15, 20.001, step = 0.2)
     y = np.concatenate((y1,y2,y3))
     fd = fdtf2d_non_uniform.FDTD_Maxwell_2D_non_uniform(x,y,CFL=0.99,
                                                         boundaryConditions=["PEC", "PEC", "PEC", "PEC"])
