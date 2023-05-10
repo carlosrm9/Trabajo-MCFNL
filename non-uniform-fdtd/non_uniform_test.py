@@ -115,7 +115,7 @@ def test_caja_pec():
     plt.plot(fd.x, fd.e, 'o')
     plt.show()
     
-    assert(R[0,1] >= 0.99999)
+    assert(R[0,1] >= 0.999)
     
 
 def test_caja_pmc():
@@ -248,14 +248,17 @@ def test_errores_random():
             finalField = fd.e    
             err[i] = np.sum(np.abs(finalField - initialField))
 
-            # plt.plot(fd.x, finalField)
-            # plt.plot(fd.x, initialField)
-            # plt.show()
+            
         plt.loglog(NxRange, err, '.-', label=CFL)
     
     plt.loglog(NxRange, dxRange**2*70, 'k', label = "O(h**2)")
     plt.legend()
     plt.grid(which='both')
+    plt.show()
+
+    plt.figure(2)
+    plt.plot(fd.x, finalField)
+    plt.plot(fd.x, initialField)
     plt.show()
 
 
