@@ -116,13 +116,13 @@ class FDTD_Maxwell_1D_nonuniform():
         
     # MÉTODO DE ANIMACIÓN #
     
-    def animation(self, t=0.01):
+    def animation(self, t):
         plt.plot(self.x, self.e, '*')
         plt.plot(self.xDual, self.h, '.')
         plt.ylim(-1.1, 1.1)
         plt.xlim(self.x[0], self.x[-1])
         plt.grid()
-        plt.pause(t)
+        plt.pause(0.00000001)
         plt.cla()
 
     
